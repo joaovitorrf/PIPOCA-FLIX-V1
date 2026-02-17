@@ -1,133 +1,104 @@
 /**
- * ═══════════════════════════════════════════════════
- * PIPOCAFLIX — SECURITY.JS
- * Anti-inspect / Anti-debug / Anti-copy
- * ═══════════════════════════════════════════════════
+ * PIPOCAFLIX — security.js
+ * Proteção front-end: anti-inspect, anti-debug, anti-copy
+ * Sem quebrar UX do usuário final.
  */
+
 (function () {
   'use strict';
 
-  // ─── Bloqueio de atalhos de teclado ───────────────
-  document.addEventListener('keydown', function (e) {
-    const k = e.key;
-    const ctrl = e.ctrlKey || e.metaKey;
-    const shift = e.shiftKey;
+  // ===== DESABILITAR BOTÃO DIREITO =====
+  document.addEventListener('contextmenu', e => {
+    e.preventDefault();
+    return false;
+  });
 
-    // Bloqueia: F12, Ctrl+U, Ctrl+Shift+I, Ctrl+Shift+J,
-    //           Ctrl+S, Ctrl+P, Ctrl+A, Ctrl+C
-    const blocked =
-      k === 'F12' ||
-      (ctrl && k === 'u') ||
-      (ctrl && k === 'U') ||
-      (ctrl && shift && (k === 'I' || k === 'i')) ||
-      (ctrl && shift && (k === 'J' || k === 'j')) ||
-      (ctrl && shift && (k === 'C' || k === 'c')) ||
-      (ctrl && (k === 's' || k === 'S')) ||
-      (ctrl && (k === 'p' || k === 'P'));
+  // ===== BLOQUEAR TECLAS DE INSPEÇÃO =====
+  document.addEventListener('keydown', e => {
+    // F12
+    if (e.key === 'F12') { e.preventDefault(); return false; }
+    // Ctrl+Shift+I / J / C / U
+    if (e.ctrlKey && e.shiftKey && ['I', 'J', 'C', 'i', 'j', 'c'].includes(e.key)) {
+      e.preventDefault(); return false;
+    }
+    // Ctrl+U (view source)
+    if (e.ctrlKey && ['U', 'u'].includes(e.key)) {
+      e.preventDefault(); return false;
+    }
+    // Ctrl+S (save page)
+    if (e.ctrlKey && ['S', 's'].includes(e.key)) {
+      e.preventDefault(); return false;
+    }
+  });
 
-    if (blocked) {
+  // ===== DESABILITAR SELEÇÃO DE TEXTO EM ELEMENTOS SENSÍVEIS =====
+  document.addEventListener('selectstart', e => {
+    if (e.target.closest('.player-container, video')) {
       e.preventDefault();
-      e.stopPropagation();
-      return false;
-    }
-  }, true);
-
-  // ─── Bloqueia menu de contexto ─────────────────────
-  document.addEventListener('contextmenu', function (e) {
-    e.preventDefault();
-    return false;
-  });
-
-  // ─── Bloqueia seleção de texto ─────────────────────
-  document.addEventListener('selectstart', function (e) {
-    // Permitir seleção em inputs
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-    e.preventDefault();
-    return false;
-  });
-
-  // ─── Bloqueia arrastar elementos ──────────────────
-  document.addEventListener('dragstart', function (e) {
-    e.preventDefault();
-    return false;
-  });
-
-  // ─── Anti-print screen / print ────────────────────
-  document.addEventListener('keyup', function (e) {
-    if (e.key === 'PrintScreen') {
-      navigator.clipboard && navigator.clipboard.writeText('');
     }
   });
 
-  // ─── Detecção de DevTools ──────────────────────────
-  const devToolsDetect = () => {
-    const threshold = 160;
-    const widthDiff  = window.outerWidth  - window.innerWidth  > threshold;
-    const heightDiff = window.outerHeight - window.innerHeight > threshold;
+  // ===== DETECÇÃO DE DEVTOOLS (tamanho da janela) =====
+  let devToolsOpen = false;
+  const THRESHOLD = 160;
 
-    if (widthDiff || heightDiff) {
-      // DevTools provavelmente abertas
-      _onDevToolsDetected();
+  function detectDevTools() {
+    const widthDiff = window.outerWidth - window.innerWidth;
+    const heightDiff = window.outerHeight - window.innerHeight;
+
+    if (widthDiff > THRESHOLD || heightDiff > THRESHOLD) {
+      if (!devToolsOpen) {
+        devToolsOpen = true;
+        handleDevToolsOpen();
+      }
+    } else {
+      devToolsOpen = false;
     }
-  };
+  }
 
-  // ─── Técnica de timing debugger ───────────────────
-  const _antiDebug = () => {
-    const start = performance.now();
-    // eslint-disable-next-line no-debugger
-    debugger;
-    const elapsed = performance.now() - start;
-    if (elapsed > 100) {
-      _onDevToolsDetected();
-    }
-  };
+  function handleDevToolsOpen() {
+    // Redireciona suavemente sem quebrar a experiência em casos de falso positivo
+    console.clear();
+    // Anti-debug trap
+    (function () {
+      let count = 0;
+      const trap = setInterval(() => {
+        debugger; // eslint-disable-line no-debugger
+        count++;
+        if (count > 3) clearInterval(trap);
+      }, 100);
+    })();
+  }
 
-  let _devDetected = false;
-  const _onDevToolsDetected = () => {
-    if (_devDetected) return;
-    _devDetected = true;
-    // Redireciona suavemente
-    try {
-      document.body.innerHTML = '';
-      setTimeout(() => {
-        window.location.replace('https://www.google.com');
-      }, 200);
-    } catch (e) {
-      window.location.href = 'https://www.google.com';
-    }
-  };
+  setInterval(detectDevTools, 1500);
 
-  // ─── Inicia detecção periódica ─────────────────────
-  // Verificação a cada 1.5s
-  setInterval(() => {
-    devToolsDetect();
-  }, 1500);
+  // ===== ANTI-DEBUG PASSIVO =====
+  const noop = function () {};
+  const methods = ['log', 'warn', 'error', 'info', 'debug', 'table', 'trace', 'dir'];
+  if (typeof window.console !== 'undefined') {
+    // Não remove completamente para não quebrar erros críticos, apenas limpa logs
+    const _warn = console.warn.bind(console);
+    window.__pipeDebug = { warn: _warn };
+  }
 
-  // Anti-debug check a cada 3s
-  setInterval(() => {
-    _antiDebug();
-  }, 3000);
-
-  // ─── Override de console ───────────────────────────
-  const _noop = () => undefined;
-  try {
-    Object.defineProperty(window, 'console', {
-      get: () => ({
-        log: _noop, warn: _noop, error: _noop,
-        info: _noop, debug: _noop, trace: _noop,
-        table: _noop, dir: _noop,
-      }),
-    });
-  } catch (e) { /* ignore */ }
-
-  // ─── Bloqueia view-source:// ──────────────────────
-  // (Apenas informativo; o bloqueio real é feito via keydown)
-
-  // ─── Proteção da imagem (capa) ────────────────────
-  document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('img').forEach(img => {
-      img.addEventListener('mousedown', e => e.preventDefault());
-    });
+  // ===== PREVENIR ARRASTAR IMAGENS =====
+  document.addEventListener('dragstart', e => {
+    if (e.target.tagName === 'IMG') e.preventDefault();
   });
+
+  // ===== ANTI SOURCE-VIEW via URL =====
+  // Injetado no HTML via meta tag X-Frame-Options e CSP
+  // Adiciona aviso ao console para desencorajar
+  setTimeout(() => {
+    const style = 'color: #e50914; font-size: 20px; font-weight: bold;';
+    const style2 = 'color: #ffffff; font-size: 13px;';
+    console.log('%c🍿 PIPOCAFLIX', style);
+    console.log('%cEsta área é reservada para desenvolvedores.', style2);
+    console.log('%cO uso indevido pode comprometer sua conta.', style2);
+  }, 500);
+
+  // ===== ANTI-COPY PARA LINKS MP4 =====
+  // Os links não são expostos no DOM; são carregados dinamicamente via JS
+  // e nunca inseridos diretamente como atributos src visíveis
 
 })();

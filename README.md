@@ -1,7 +1,6 @@
-# 🍿 PipocaFlix
+# 🍿 PipocaFlix — Sistema de Streaming Profissional
 
-Um sistema completo de streaming profissional, moderno e responsivo.
-Estilo cinematográfico com design Netflix-like: Preto + Vermelho + Neon.
+> Plataforma de streaming moderno, rápido e altamente monetizável construído com HTML5, CSS3 e JavaScript Vanilla.
 
 ---
 
@@ -10,225 +9,195 @@ Estilo cinematográfico com design Netflix-like: Preto + Vermelho + Neon.
 ```
 /pipocaflix
  ├── /public
- │    ├── index.html        → Home / Busca principal
- │    ├── filme.html        → Página de filme individual
- │    └── serie.html        → Página de série com episódios
+ │    ├── index.html       → Homepage com hero, grids e busca
+ │    ├── filme.html       → Página de filme dinâmica
+ │    └── serie.html       → Página de série com temporadas/episódios
  │
  ├── /assets
  │    ├── /css
- │    │     └── style.css   → CSS completo (variáveis, animações, responsivo)
+ │    │     └── style.css  → CSS cinematográfico completo
  │    ├── /js
- │    │     ├── api.js      → Integração Baserow API
- │    │     ├── search.js   → Fuzzy search + normalização
- │    │     ├── security.js → Anti-inspect / Anti-devtools
- │    │     └── player.js   → Lógica do player de vídeo
- │    └── /img              → Imagens locais (se necessário)
+ │    │     ├── api.js     → Integração Google Sheets via Proxy
+ │    │     ├── search.js  → Fuzzy Search com debounce
+ │    │     ├── security.js→ Proteção front-end
+ │    │     └── player.js  → Lógica compartilhada do player
+ │    └── /img             → Imagens locais (opcional)
  │
  ├── README.md
- └── vercel.json            → Config de deploy no Vercel
+ └── vercel.json           → Configuração de deploy
 ```
 
 ---
 
-## 🚀 Como Rodar Localmente
+## ⚡ Setup Local
 
-### Opção 1 — Live Server (VS Code)
-
-1. Instale a extensão **Live Server** no VS Code
-2. Abra a pasta `pipocaflix/`
-3. Clique com o botão direito em `public/index.html`
-4. Selecione **"Open with Live Server"**
-5. Acesse: `http://127.0.0.1:5500/public/index.html`
-
-### Opção 2 — Python HTTP Server
+1. Clone ou baixe o projeto
+2. Abra um servidor local (obrigatório para requisições fetch):
 
 ```bash
-cd pipocaflix
+# Python
 python3 -m http.server 8080
-# Acesse: http://localhost:8080/public/index.html
+
+# Node.js (se tiver npx)
+npx serve .
+
+# VS Code: instale a extensão "Live Server" e clique em "Go Live"
 ```
 
-### Opção 3 — Node.js serve
+3. Acesse `http://localhost:8080/public/index.html`
 
-```bash
-npm install -g serve
-cd pipocaflix
-serve .
-# Acesse: http://localhost:3000/public/index.html
-```
+> ⚠️ **Não abra os arquivos diretamente** via `file://` — o fetch via proxy requer um servidor HTTP.
 
 ---
 
-## 📦 Como Subir no GitHub
+## 🚀 Deploy no Vercel
 
-```bash
-# 1. Inicializar repositório
-git init
-git add .
-git commit -m "🍿 PipocaFlix - Initial commit"
-
-# 2. Criar repositório no GitHub (via github.com)
-#    Nome sugerido: pipocaflix
-
-# 3. Conectar e enviar
-git remote add origin https://github.com/SEU_USUARIO/pipocaflix.git
-git branch -M main
-git push -u origin main
-```
-
----
-
-## ☁️ Como Subir no Vercel
-
-### Via Dashboard (mais fácil):
-
-1. Acesse [vercel.com](https://vercel.com) e faça login
-2. Clique em **"Add New Project"**
-3. Importe o repositório do GitHub
-4. Em **"Root Directory"**, deixe como `/` (raiz)
-5. Clique em **"Deploy"**
-6. Aguarde — em ~1 minuto seu site está no ar!
-
-### Via CLI:
-
+### Método 1 — Vercel CLI
 ```bash
 npm install -g vercel
 cd pipocaflix
-vercel login
-vercel --prod
+vercel
 ```
+
+### Método 2 — GitHub + Vercel (recomendado)
+1. Suba o projeto para um repositório GitHub
+2. Acesse [vercel.com](https://vercel.com) → **New Project**
+3. Importe o repositório
+4. Clique em **Deploy** (sem configuração extra necessária)
+
+O `vercel.json` já está configurado com rotas, headers de segurança e cache otimizado.
 
 ---
 
-## 🔧 Configurações e Variáveis
+## 📡 Banco de Dados (Google Sheets)
 
-As configurações da API estão em `assets/js/api.js`:
+### Configuração do Proxy
+O sistema **NUNCA** acessa o Google Sheets diretamente. Toda requisição passa pelo proxy Worker configurado em `api.js`:
 
-| Variável | Valor | Descrição |
-|----------|-------|-----------|
-| `BASE_URL` | `http://213.199.56.115` | Servidor Baserow |
-| `TOKEN` | `1rq7OOnCoVCuSDKXzv8k7JbGh9wO9MsH` | Token de autenticação |
-| `TABLE_ID` | `4400` | Tabela "Site Conteudos" |
-| `TABLE_EP` | `5351` | Tabela "Site Episodios" |
-
-**Smartlink (monetização)** está em `assets/js/player.js`:
 ```js
-const SMARTLINK = 'https://www.effectivegatecpm.com/eacwhk55f?key=87f8fc919fb5d70a825293b5490713dd';
+const PROXY = "https://autumn-pine-50da.slacarambafdsosobrenome.workers.dev/?url=";
 ```
 
----
+Para trocar o proxy, edite apenas essa variável em `assets/js/api.js`.
 
-## 📡 API Baserow — Campos
+### Planilha Principal
+- **URL Base**: Configurada em `api.js` → variável `SHEETS_BASE`
+- **Aba Filmes** → GID `300449936`
+- **Aba Séries** → GID `413183487`
+- **Aba Episódios** → GID `1394045118`
 
-### Tabela: Site Conteudos (4400)
+### Estrutura das Colunas
 
-| Campo | ID | Tipo |
-|-------|-----|------|
-| Nome | 29998 | Texto |
-| Link | 29999 | URL do vídeo |
-| Sinopse | 30000 | Texto longo |
-| Capa | 34665 | URL imagem |
-| Categoria | 34666 | Texto |
-| Ano | 34667 | Número |
-| Duração | 34668 | Texto |
-| Trailer | 34669 | URL YouTube |
-| Fotos Elenco | 34670 | URLs separadas por vírgula |
-| Nome Elenco | 34671 | Nomes separados por vírgula |
-| Tipo | 34672 | "Filme" ou "Serie" |
-| Audio | 34673 | Texto (ex: "Dublado") |
+**Filmes / Séries** (colunas A–M, N para séries):
+| Col | Campo |
+|-----|-------|
+| A | Nome |
+| B | Link MP4 |
+| C | Sinopse |
+| D | Capa (URL) |
+| E | Categoria |
+| F | Ano |
+| G | Duração |
+| H | Trailer (URL YouTube) |
+| I | Nomes do Elenco (separados por `\|`) |
+| J | Fotos do Elenco (separadas por `\|`) |
+| L | Tipo (filme/serie) |
+| M | Áudio |
+| N | Total de Temporadas *(só séries)* |
 
-### Tabela: Site Episodios (5351)
-
-| Campo | ID | Tipo |
-|-------|-----|------|
-| Nome | 35682 | Nome da série |
-| Link | 35683 | URL do vídeo |
-| Temporada | 35684 | Número |
-| Episódio | 35685 | Número |
-
----
-
-## 🎨 Identidade Visual
-
-- **Cores:** Preto profundo `#0A0A0A` + Vermelho `#E50914` + Branco `#F5F5F5`
-- **Fontes:** Bebas Neue (títulos) + Rajdhani (UI) + Exo 2 (corpo)
-- **Efeitos:** Glow neon, backdrop-filter, gradientes dinâmicos, animações fluidas
-- **Cards:** Efeito 3D com hover, lazy load, skeleton loading
+**Episódios**:
+| Col | Campo |
+|-----|-------|
+| A | Nome da Série (exato) |
+| B | Link MP4 |
+| C | Temporada |
+| D | Número do Episódio |
 
 ---
 
 ## 💰 Monetização
 
-Os seguintes scripts de ads estão integrados:
+O sistema inclui dois formatos:
 
-**Social Bar** (carrega automaticamente em todas as páginas):
-```html
-<script src="https://pl28456424.effectivegatecpm.com/af/b2/ae/afb2aeef36a1a40f4d3634823ebf0f59.js"></script>
-```
+| Tipo | Código | Posições |
+|------|--------|---------|
+| **Native Banner** | `invoke.js` | Header, antes do player, footer |
+| **Social Bar** | Social Bar script | Global (carrega automaticamente) |
 
-**Native Banner** (inserido estrategicamente entre seções):
-```html
-<script async src="https://pl28456427.effectivegatecpm.com/cccc7245f0c46289c4b3a2911da39bca/invoke.js"></script>
-<div id="container-cccc7245f0c46289c4b3a2911da39bca"></div>
-```
-
-**Smartlink** (abre ao clicar para desbloquear player):
-- Filmes: clique 3x no botão de desbloqueio
-- Séries: clique em qualquer episódio
+O **Smartlink** é ativado **antes** de cada play (3 cliques para desbloquear no filme; automaticamente antes de cada episódio na série).
 
 ---
 
-## 🔐 Segurança
+## 🔒 Segurança
 
-O arquivo `security.js` bloqueia:
-- `F12` — DevTools
-- `Ctrl+U` — View Source
-- `Ctrl+Shift+I/J` — Inspect/Console
-- `Ctrl+S` — Salvar página
-- `Ctrl+P` — Imprimir
-- `Botão direito` — Menu de contexto
-- `Seleção de texto`
-- Detecção de DevTools abertas → redireciona para Google
-
----
-
-## 📱 Responsividade
-
-| Breakpoint | Layout |
-|-----------|--------|
-| < 480px | 2 colunas de cards |
-| 480–767px | 2-3 colunas |
-| 768–1023px | 3 colunas |
-| 1024–1199px | 4 colunas |
-| 1200–1919px | 5+ colunas (auto-fill 220px) |
-| > 1920px | 8 colunas (ultrawide) |
+O arquivo `security.js` implementa:
+- Bloqueio de F12, Ctrl+Shift+I/J/C, Ctrl+U
+- Desativação do botão direito
+- Detecção de DevTools por diferença de tamanho de janela
+- Anti-debug trap com `debugger`
+- Prevenção de drag em imagens
+- Console com aviso dissuasivo
+- Links de vídeo não são inseridos no DOM até o desbloqueio
 
 ---
 
-## ⚡ Performance
+## 🔄 Cache e Performance
 
-- **Lazy Load** nativo com `loading="lazy"` em todas as imagens
-- **Cache** de API em memória com TTL de 5 minutos
-- **Debounce** de 350ms na busca
-- **IntersectionObserver** para imagens
-- **CSS Variables** para consistência sem duplicação
-- Imagens com fallback SVG inline
+- Cache client-side de 5 minutos para dados do Sheets (`api.js`)
+- Retry automático com backoff (3 tentativas, `api.js`)
+- Timeout de 12 segundos por requisição
+- Lazy loading em todas as imagens
+- Headers de cache otimizados via `vercel.json`
+- Debounce de 280ms na busca (`search.js`)
+
+---
+
+## 🛠️ Manutenção
+
+### Atualizar conteúdo
+Basta editar a planilha Google Sheets. O site busca os dados dinamicamente.
+
+### Trocar proxy Worker
+Edite `PROXY` em `assets/js/api.js`.
+
+### Trocar smartlink
+Edite `SMARTLINK` em `assets/js/player.js`.
+
+### Adicionar categoria no filtro
+As categorias são geradas automaticamente a partir da coluna E da planilha.
+
+### Trocar banner de monetização
+Substitua os IDs dos scripts em cada HTML (`invoke.js` e `social bar`).
+
+---
+
+## 📱 Compatibilidade
+
+| Dispositivo | Suporte |
+|-------------|---------|
+| Mobile (iOS/Android) | ✅ |
+| Tablet | ✅ |
+| Desktop | ✅ |
+| Ultrawide 21:9 | ✅ |
+| Fullscreen com orientação landscape | ✅ |
 
 ---
 
 ## 🐛 Troubleshooting
 
-**Player não carrega?**
-- Verifique se o link do vídeo está correto na tabela Baserow
-- CORS pode bloquear: use um proxy ou worker Cloudflare
+**Conteúdo não carrega**
+- Verifique se o proxy está ativo e acessível
+- Abra o console (F12) e procure erros de rede
+- Confirme que a planilha está publicada como CSV
 
-**Busca não funciona?**
-- Requer pelo menos 2 caracteres
-- Aceita erros de digitação graças ao Fuzzy Search
+**Player não aparece**
+- O botão precisa ser clicado 3 vezes (comportamento intencional)
+- Verifique se o link MP4 na planilha é válido
 
-**Episódios não aparecem?**
-- Verifique se o campo "Nome" na tabela Episodios corresponde ao nome da série
+**Episódios não aparecem**
+- Confirme que o nome da série na aba Episódios é idêntico ao da aba Séries
+- A comparação ignora acentos e maiúsculas/minúsculas
 
 ---
 
-*PipocaFlix © 2025 — Feito com ❤️ e 🍿*
+*PipocaFlix — Feito com 🍿 no Brasil*
