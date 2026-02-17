@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="PipocaFlix — Assista filmes e séries online gratuitamente. Catálogo completo com os melhores títulos." />
+  <meta name="keywords" content="pipocaflix, assistir filmes online, séries online, streaming gratuito" />
+  <meta property="og:title"       content="PipocaFlix — Filmes e Séries Online" />
+  <meta property="og:description" content="Catálogo completo de filmes e séries para assistir online." />
+  <meta property="og:type"        content="website" />
+  <meta name="theme-color" content="#E50914" />
+  <title>PipocaFlix 🍿 — Filmes e Séries Online</title>
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍿</text></svg>" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="../assets/css/style.css" />
+
+  <!-- Social Bar Ad -->
+  <script src="https://pl28456424.effectivegatecpm.com/af/b2/ae/afb2aeef36a1a40f4d3634823ebf0f59.js" type="text/javascript"></script>
+</head>
+
+<body>
+
+  <!-- ── NAVBAR ─────────────────────────────────────── -->
+  <nav class="navbar" id="navbar">
+    <a href="index.html" class="logo">Pipoca<span>Flix</span></a>
+
+    <div class="nav-search">
+      <svg viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+      <input type="text" id="navSearchInput" placeholder="Buscar..." autocomplete="off" />
+    </div>
+  </nav>
+
+  <!-- ── HERO SEARCH ────────────────────────────────── -->
+  <section class="hero-search">
+    <p class="hero-eyebrow">🍿 Streaming Gratuito</p>
+    <h1 class="hero-title">
+      Seu cinema,<br><em>sem limites</em>
+    </h1>
+    <p class="hero-subtitle">
+      Digite o nome do filme ou série que você deseja assistir 🍿
+    </p>
+
+    <div class="search-box" id="heroSearchBox">
+      <input
+        type="text"
+        id="heroSearchInput"
+        placeholder="Ex: Vingadores, La Casa de Papel..."
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <button class="search-btn" id="searchBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Buscar
+      </button>
+      <div class="search-dropdown" id="searchDropdown"></div>
+      <p class="search-badge">Busca inteligente com <span>Fuzzy Match</span> — aceita erros de digitação</p>
+    </div>
+  </section>
+
+  <!-- ── AD BANNER ──────────────────────────────────── -->
+  <div class="ad-banner">
+    <script async data-cfasync="false" src="https://pl28456427.effectivegatecpm.com/cccc7245f0c46289c4b3a2911da39bca/invoke.js"></script>
+    <div id="container-cccc7245f0c46289c4b3a2911da39bca"></div>
+  </div>
+
+  <!-- ── FILTER TAGS ────────────────────────────────── -->
+  <div class="filter-row" id="filterRow">
+    <button class="filter-tag active" data-filter="Todos">Todos</button>
+    <button class="filter-tag" data-filter="Filme">🎬 Filmes</button>
+    <button class="filter-tag" data-filter="Serie">📺 Séries</button>
+  </div>
+
+  <!-- ── CATÁLOGO ───────────────────────────────────── -->
+  <section class="cards-section" id="catalogSection">
+    <div class="section-header">
+      <h2 class="section-title" id="sectionTitle">Catálogo Completo</h2>
+      <span class="section-link" id="countLabel">Carregando...</span>
+    </div>
+
+    <div class="cards-grid" id="cardsGrid">
+      <!-- Skeleton loading -->
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+    </div>
+  </section>
+
+  <!-- ── AD BANNER (between sections) ─────────────── -->
+  <div class="ad-banner">
+    <script async data-cfasync="false" src="https://pl28456427.effectivegatecpm.com/cccc7245f0c46289c4b3a2911da39bca/invoke.js"></script>
+    <div id="container-cccc7245f0c46289c4b3a2911da39bca2"></div>
+  </div>
+
+  <!-- ── FOOTER ─────────────────────────────────────── -->
+  <footer class="footer">
+    <div class="footer-logo">PipocaFlix</div>
+    <p class="footer-tagline">Seu cinema, sem limites. 🍿</p>
+    <div class="footer-links">
+      <a href="#">Início</a>
+      <a href="#">Filmes</a>
+      <a href="#">Séries</a>
+      <a href="#">Contato</a>
+    </div>
+    <p class="footer-copy">© 2025 PipocaFlix. Todos os direitos reservados.</p>
+  </footer>
+
+  <!-- ── SCRIPTS ────────────────────────────────────── -->
+  <script src="../assets/js/security.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/search.js"></script>
+
+  <script>
+  // ═══════════════════════════════════════════════════
+  //  HOME PAGE LOGIC
+  // ═══════════════════════════════════════════════════
+
+  let allContent = [];
+  let filteredContent = [];
+  let currentFilter = 'Todos';
+  let isSearching = false;
+
+  // ─── Navbar scroll effect ───────────────────────────
+  window.addEventListener('scroll', () => {
+    const nav = document.getElementById('navbar');
+    if (window.scrollY > 50) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+  }, { passive: true });
+
+  // ─── Criar card ─────────────────────────────────────
+  const createCard = (item) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    const tipo = (item.Tipo || 'Filme').toLowerCase();
+    const isSerie = tipo === 'serie' || tipo === 'série';
+    const href = isSerie
+      ? `serie.html?id=${item.id}`
+      : `filme.html?id=${item.id}`;
+    const badgeClass = isSerie ? 'serie' : 'filme';
+    const badgeText  = isSerie ? '📺 SÉRIE' : '🎬 FILME';
+
+    const capaSrc = item.Capa || '';
+    const nome    = item.Nome || 'Sem título';
+    const ano     = item.Ano  || '';
+    const cat     = item.Categoria || '';
+
+    card.innerHTML = `
+      <span class="card-badge ${badgeClass}">${badgeText}</span>
+      <img
+        class="card-img"
+        src="${capaSrc}"
+        alt="${nome}"
+        loading="lazy"
+        onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22450%22><rect fill=%22%231a1a1a%22 width=%22300%22 height=%22450%22/><text fill=%22%23555%22 font-size=%2240%22 x=%2250%%25%22 y=%2250%%25%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22>🎬</text></svg>'"
+      />
+      <div class="card-overlay">
+        <h3 class="card-title">${nome}</h3>
+        <div class="card-meta">
+          ${ano ? `<span>${ano}</span>` : ''}
+          ${ano && cat ? '<span class="card-meta-dot"></span>' : ''}
+          ${cat ? `<span>${cat}</span>` : ''}
+        </div>
+        <button class="card-play-btn" onclick="event.stopPropagation(); window.location='${href}'">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          Assistir
+        </button>
+      </div>
+    `;
+
+    card.addEventListener('click', () => {
+      window.location.href = href;
+    });
+
+    return card;
+  };
+
+  // ─── Renderizar cards ────────────────────────────────
+  const renderCards = (items) => {
+    const grid = document.getElementById('cardsGrid');
+    const count = document.getElementById('countLabel');
+    grid.innerHTML = '';
+
+    if (!items || items.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">🍿</div>
+          <h3 class="empty-state-title">Nenhum resultado encontrado</h3>
+          <p class="empty-state-sub">Tente outro título ou verifique a ortografia</p>
+        </div>`;
+      if (count) count.textContent = '0 títulos';
+      return;
+    }
+
+    if (count) count.textContent = `${items.length} título${items.length !== 1 ? 's' : ''}`;
+
+    const fragment = document.createDocumentFragment();
+    items.forEach(item => fragment.appendChild(createCard(item)));
+    grid.appendChild(fragment);
+  };
+
+  // ─── Aplicar filtro ────────────────────────────────
+  const applyFilter = (filter) => {
+    currentFilter = filter;
+    let base = isSearching ? filteredContent : allContent;
+
+    if (filter === 'Todos') {
+      renderCards(base);
+      document.getElementById('sectionTitle').textContent = isSearching ? 'Resultados' : 'Catálogo Completo';
+    } else {
+      const filtered = base.filter(item => {
+        const tipo = (item.Tipo || '').toLowerCase();
+        if (filter === 'Filme') return tipo === 'filme';
+        if (filter === 'Serie') return tipo === 'serie' || tipo === 'série';
+        return true;
+      });
+      renderCards(filtered);
+      document.getElementById('sectionTitle').textContent = filter === 'Filme' ? '🎬 Filmes' : '📺 Séries';
+    }
+  };
+
+  // ─── Filter tags ────────────────────────────────────
+  document.querySelectorAll('.filter-tag').forEach(tag => {
+    tag.addEventListener('click', function () {
+      document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      applyFilter(this.dataset.filter);
+    });
+  });
+
+  // ─── Dropdown de busca hero ───────────────────────
+  const renderDropdown = (results, query) => {
+    const dd = document.getElementById('searchDropdown');
+    dd.innerHTML = '';
+
+    if (!results || results.length === 0) {
+      dd.innerHTML = `<div class="dropdown-empty">😕 Nenhum resultado para "<strong>${query}</strong>"</div>`;
+      dd.classList.add('active');
+      return;
+    }
+
+    results.slice(0, 8).forEach(item => {
+      const tipo = (item.Tipo || 'Filme').toLowerCase();
+      const isSerie = tipo === 'serie' || tipo === 'série';
+      const href = isSerie ? `serie.html?id=${item.id}` : `filme.html?id=${item.id}`;
+
+      const div = document.createElement('div');
+      div.className = 'dropdown-item';
+      div.innerHTML = `
+        <img src="${item.Capa || ''}" alt="${item.Nome}" loading="lazy"
+          onerror="this.style.background='#222'"
+        />
+        <div class="dropdown-item-info">
+          <div class="dropdown-item-title">${item.Nome || 'Sem título'}</div>
+          <div class="dropdown-item-meta">${item.Ano || ''} ${item.Categoria ? '· ' + item.Categoria : ''}</div>
+        </div>
+        <span class="dropdown-item-type">${isSerie ? 'SÉRIE' : 'FILME'}</span>
+      `;
+      div.addEventListener('click', () => { window.location.href = href; });
+      dd.appendChild(div);
+    });
+
+    dd.classList.add('active');
+  };
+
+  // ─── Handler busca (debounced) ─────────────────────
+  const doSearch = Search.debounced((query) => {
+    if (!query || query.trim().length < 2) {
+      document.getElementById('searchDropdown').classList.remove('active');
+      isSearching = false;
+      applyFilter(currentFilter);
+      return;
+    }
+
+    const results = Search.searchIn(query, allContent, 0.25);
+    isSearching = true;
+    filteredContent = results;
+    renderDropdown(results, query);
+
+    // Atualiza grid também
+    document.getElementById('sectionTitle').textContent = `Resultados para "${query}"`;
+    applyFilter(currentFilter);
+  }, 350);
+
+  // ─── Eventos de busca ──────────────────────────────
+  const heroInput = document.getElementById('heroSearchInput');
+  const navInput  = document.getElementById('navSearchInput');
+
+  heroInput.addEventListener('input', (e) => doSearch(e.target.value));
+  navInput.addEventListener('input', (e) => {
+    heroInput.value = e.target.value;
+    doSearch(e.target.value);
+  });
+
+  heroInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.getElementById('searchDropdown').classList.remove('active');
+    }
+  });
+
+  document.getElementById('searchBtn').addEventListener('click', () => {
+    doSearch(heroInput.value);
+  });
+
+  // Fechar dropdown ao clicar fora
+  document.addEventListener('click', (e) => {
+    if (!document.getElementById('heroSearchBox').contains(e.target)) {
+      document.getElementById('searchDropdown').classList.remove('active');
+    }
+  });
+
+  // ─── Carregar catálogo ─────────────────────────────
+  const loadCatalog = async () => {
+    try {
+      allContent = await API.getAllConteudos();
+      renderCards(allContent);
+
+      const count = document.getElementById('countLabel');
+      if (count) count.textContent = `${allContent.length} títulos`;
+    } catch (err) {
+      console.error('Erro ao carregar catálogo:', err);
+      const grid = document.getElementById('cardsGrid');
+      grid.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">⚠️</div>
+          <h3 class="empty-state-title">Erro ao carregar</h3>
+          <p class="empty-state-sub">Verifique sua conexão e tente novamente</p>
+        </div>`;
+    }
+  };
+
+  loadCatalog();
+
+  // ─── Lazy load observer ────────────────────────────
+  if ('IntersectionObserver' in window) {
+    const imgObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          if (img.dataset.src) {
+            img.src = img.dataset.src;
+            img.removeAttribute('data-src');
+          }
+          imgObserver.unobserve(img);
+        }
+      });
+    }, { rootMargin: '200px' });
+
+    document.querySelectorAll('img[data-src]').forEach(img => imgObserver.observe(img));
+  }
+  </script>
+</body>
+</html>
